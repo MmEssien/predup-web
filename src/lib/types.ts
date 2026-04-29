@@ -38,12 +38,12 @@ export interface Prediction {
   id?: number;
   fixture_id: number;
   fixture?: Fixture;
-  sport: Sport;
-  league: LeagueCode;
-  predicted_value: string;
-  probability: number;
-  confidence: Confidence;
-  is_accepted: boolean;
+  sport?: Sport;
+  league?: LeagueCode;
+  predicted_value?: string;
+  probability?: number;
+  confidence?: Confidence;
+  is_accepted?: boolean;
   ev?: number;
   kelly_pct?: number;
   odds_home?: number;
