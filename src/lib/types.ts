@@ -57,6 +57,8 @@ export interface Prediction {
 }
 
 export interface LivePrediction extends Prediction {
+  home_team: string;
+  away_team: string;
   start_time: string;
   matchup: string;
   home_odds: number;
