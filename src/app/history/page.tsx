@@ -191,9 +191,9 @@ export default function HistoryPage() {
     if (search) {
       const searchLower = search.toLowerCase()
       result = result.filter(p =>
-        p.fixture?.home_team.toLowerCase().includes(searchLower) ||
-        p.fixture?.away_team.toLowerCase().includes(searchLower) ||
-        p.predicted_value.toLowerCase().includes(searchLower)
+        p.fixture?.home_team?.toLowerCase().includes(searchLower) ||
+        p.fixture?.away_team?.toLowerCase().includes(searchLower) ||
+        p.predicted_value?.toLowerCase().includes(searchLower)
       )
     }
 
