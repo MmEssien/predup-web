@@ -12,8 +12,9 @@ import type {
   Prediction,
 } from './types';
 
-// Get API URL from environment, with fallback for development
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+// Get API URL from environment, with fallbacks for dev and production
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 
+  (process.env.NEXT_PUBLIC_APP_ENV === 'production' ? 'https://api-predup.up.railway.app' : 'http://localhost:8000');
 
 // Configuration constants
 const REQUEST_TIMEOUT = 15000; // 15 seconds
