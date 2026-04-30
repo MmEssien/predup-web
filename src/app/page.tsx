@@ -247,7 +247,7 @@ export default function DashboardPage() {
                         <div>
                           <div className="font-medium">High EV detected: {p.fixture?.home_team}</div>
                           <div className="text-sm text-muted-foreground">
-                            Target: {p.predicted_value} @ {p.probability.toFixed(2)} prob
+                            Target: {p.predicted_value} @ {p.probability?.toFixed(2) || "0.50"} prob
                           </div>
                         </div>
                       </div>
