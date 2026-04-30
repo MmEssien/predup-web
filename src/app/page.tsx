@@ -123,13 +123,9 @@ export default function DashboardPage() {
 
       setLastUpdated(new Date());
     } catch (err) {
-      console.error('Failed to fetch dashboard data:', err);
+      console.error('Backend connection failed:', err);
       setIsBackendOnline(false);
-      setError('Unable to connect to backend. Showing cached data.');
-
-      // Use fallback data
-      setStats(mockStats);
-      setPredictions(mockLivePredictions);
+      setError('Backend connection failed. Please check backend status at ' + API_URL);
     } finally {
       setLoading(false);
     }

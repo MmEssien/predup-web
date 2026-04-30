@@ -12,8 +12,12 @@ import type {
   Prediction,
 } from './types';
 
-// Get API URL - use production by default since frontend is public
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://predup-api.up.railway.app';
+// Get API URL - strict validation, no fallbacks
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+if (!API_URL) {
+  throw new Error("NEXT_PUBLIC_API_URL environment variable is not configured. Please set in Vercel dashboard.");
+}
 
 // Configuration constants
 const REQUEST_TIMEOUT = 15000; // 15 seconds
