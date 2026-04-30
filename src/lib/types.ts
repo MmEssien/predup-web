@@ -60,6 +60,7 @@ export interface LivePrediction extends Prediction {
   home_team: string;
   away_team: string;
   start_time: string;
+  status: string;
   matchup?: string;
   home_odds: number;
   away_odds: number;

@@ -33,10 +33,19 @@ export function PredictionRow({ prediction }: PredictionRowProps) {
           <div className="text-xs text-muted-foreground truncate">{prediction.away_team}</div>
         </div>
 
-        {/* Start Time */}
-        <div className="col-span-1.5 text-xs text-muted-foreground hidden sm:flex items-center gap-1">
-          <Clock className="h-3 w-3" />
-          {formatTime(prediction.start_time)}
+        {/* Start Time / Status */}
+        <div className="col-span-1.5 flex flex-col items-start gap-1">
+          {prediction.status === 'LIVE' || prediction.status === 'IN_PLAY' || prediction.status === '1H' || prediction.status === '2H' ? (
+            <Badge variant="success" className="animate-pulse py-0 px-1 text-[10px]">LIVE</Badge>
+          ) : new Date(prediction.start_time).toDateString() === new Date().toDateString() ? (
+            <Badge variant="warning" className="py-0 px-1 text-[10px]">TODAY</Badge>
+          ) : (
+            <Badge variant="outline" className="py-0 px-1 text-[10px]">UPCOMING</Badge>
+          )}
+          <div className="text-xs text-muted-foreground flex items-center gap-1">
+            <Clock className="h-3 w-3" />
+            {formatTime(prediction.start_time)}
+          </div>
         </div>
 
         {/* Odds */}
