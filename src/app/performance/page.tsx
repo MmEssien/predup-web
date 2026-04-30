@@ -189,7 +189,7 @@ export default function PerformancePage() {
                   <BarChart data={profitByMonthData}>
                     <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
                     <XAxis dataKey="month" tick={{ fontSize: 12 }} className="text-muted-foreground" />
-                    <YAxis tick={{ fontSize: 12 }} className="text-muted-foreground" prefix="$" />
+                    <YAxis tick={{ fontSize: 12 }} className="text-muted-foreground" tickFormatter={(value) => `$${value}`} />
                     <Tooltip
                       contentStyle={{
                         backgroundColor: 'hsl(var(--card))',
@@ -381,7 +381,7 @@ export default function PerformancePage() {
                   {/* Perfect calibration line */}
                   <Line
                     type="monotone"
-                    dataKey={(_, index) => (index + 1) * 0.1}
+                    dataKey="predicted"
                     stroke="#6b7280"
                     strokeDasharray="5 5"
                     strokeWidth={2}

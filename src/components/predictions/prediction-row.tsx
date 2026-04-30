@@ -21,9 +21,9 @@ export function PredictionRow({ prediction }: PredictionRowProps) {
       <div className="grid grid-cols-12 gap-2 p-3 items-center text-sm border-b last:border-0">
         {/* Sport & League */}
         <div className="col-span-2 flex items-center gap-1.5">
-          <span className="text-lg">{getSportIcon(prediction.sport)}</span>
+          <span className="text-lg">{getSportIcon(prediction.sport || '')}</span>
           <span className="text-xs text-muted-foreground hidden sm:inline">
-            {getLeagueLabel(prediction.league)}
+            {getLeagueLabel(prediction.league || '')}
           </span>
         </div>
 

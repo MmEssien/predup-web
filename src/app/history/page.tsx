@@ -375,8 +375,8 @@ export default function HistoryPage() {
                       {pick.fixture?.home_team} vs {pick.fixture?.away_team}
                     </div>
                     <div className="text-xs text-muted-foreground flex items-center gap-1">
-                      <span>{getSportIcon(pick.sport)}</span>
-                      <span>{getLeagueLabel(pick.league)}</span>
+                      <span>{getSportIcon(pick.sport || '')}</span>
+                      <span>{getLeagueLabel(pick.league || '')}</span>
                     </div>
                   </TableCell>
                   <TableCell>

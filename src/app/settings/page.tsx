@@ -77,7 +77,7 @@ export default function SettingsPage() {
           <p className="text-muted-foreground">Configure predictions and monitor system health</p>
         </div>
         <Button onClick={handleSave} disabled={loading}>
-          <Save className={cn('h-4 w-4 mr-2', loading && 'animate-spin')} />
+          <Save className={cn('h-4 w-4 mr-2', loading ? 'animate-spin' : '')} />
           Save Changes
         </Button>
       </div>
