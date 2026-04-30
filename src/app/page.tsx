@@ -21,70 +21,6 @@ import {
   CheckCircle,
 } from 'lucide-react';
 
-// Fallback mock data when API is unavailable
-const mockStats: DashboardStats = {
-  total_fixtures_today: 24,
-  positive_ev_opportunities: 8,
-  sports_active: ['football', 'nba'],
-  projected_edge_today: 5.2,
-  yesterday_roi: 3.8,
-  open_predictions: 12,
-  last_updated: new Date().toISOString(),
-};
-
-const mockLivePredictions: LivePrediction[] = [
-  {
-    fixture_id: 1,
-    sport: 'football',
-    league: 'BL1',
-    home_team: 'Bayern Munich',
-    away_team: 'Dortmund',
-    start_time: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(),
-    home_odds: 1.45,
-    away_odds: 2.85,
-    model_probability: 0.68,
-    implied_prob: 0.58,
-    ev_percent: 10.2,
-    kelly_percent: 4.2,
-    recommended_side: 'Bayern Munich',
-    confidence_score: 'high',
-    odds_source: 'The Odds API',
-  },
-  {
-    fixture_id: 2,
-    sport: 'football',
-    league: 'PL',
-    home_team: 'Manchester City',
-    away_team: 'Liverpool',
-    start_time: new Date(Date.now() + 4 * 60 * 60 * 1000).toISOString(),
-    home_odds: 2.1,
-    away_odds: 3.4,
-    model_probability: 0.52,
-    implied_prob: 0.48,
-    ev_percent: 5.8,
-    kelly_percent: 2.1,
-    recommended_side: 'Manchester City',
-    confidence_score: 'medium',
-    odds_source: 'The Odds API',
-  },
-  {
-    fixture_id: 3,
-    sport: 'nba',
-    league: 'NBA',
-    home_team: 'Lakers',
-    away_team: 'Warriors',
-    start_time: new Date(Date.now() + 6 * 60 * 60 * 1000).toISOString(),
-    home_odds: 1.95,
-    away_odds: 1.95,
-    model_probability: 0.55,
-    implied_prob: 0.5,
-    ev_percent: 6.2,
-    kelly_percent: 2.8,
-    recommended_side: 'Lakers',
-    confidence_score: 'medium',
-    odds_source: 'SportsGameOdds',
-  },
-];
 
 const mockRecentSettled = [
   { fixture: 'Bayern vs Leipzig', pick: 'Over 2.5', result: 'win' as const, profit: 45.0 },
@@ -125,7 +61,7 @@ export default function DashboardPage() {
     } catch (err) {
       console.error('Backend connection failed:', err);
       setIsBackendOnline(false);
-      setError('Backend connection failed. Please check backend status at ' + API_URL);
+      setError('Backend connection failed. Please check backend status.');
     } finally {
       setLoading(false);
     }
