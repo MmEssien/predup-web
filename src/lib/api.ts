@@ -13,7 +13,7 @@ import type {
 } from './types';
 
 // Get API URL - use production by default since frontend is public
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api-predup.up.railway.app';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://predup-api.up.railway.app';
 
 // Configuration constants
 const REQUEST_TIMEOUT = 15000; // 15 seconds
