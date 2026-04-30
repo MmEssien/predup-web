@@ -240,30 +240,25 @@ export default function DashboardPage() {
                 </div>
               ) : (
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between p-3 rounded-lg bg-ev-moderate/10 border border-ev-moderate/30">
-                    <div className="flex items-center gap-3">
-                      <AlertTriangle className="h-4 w-4 text-ev-moderate" />
-                      <div>
-                        <div className="font-medium">Bayern Munich odds shifted</div>
-                        <div className="text-sm text-muted-foreground">
-                          1.45 → 1.52 (movement detected)
+                  {predictions.filter(p => p.ev_percent > 8).map(p => (
+                    <div key={p.fixture_id} className="flex items-center justify-between p-3 rounded-lg bg-ev-strong/10 border border-ev-strong/30">
+                      <div className="flex items-center gap-3">
+                        <Zap className="h-4 w-4 text-ev-strong" />
+                        <div>
+                          <div className="font-medium">High EV detected: {p.fixture?.home_team}</div>
+                          <div className="text-sm text-muted-foreground">
+                            Target: {p.predicted_value} @ {p.probability.toFixed(2)} prob
+                          </div>
                         </div>
                       </div>
+                      <Badge variant="success">Opportunity</Badge>
                     </div>
-                    <Badge variant="warning">Monitoring</Badge>
-                  </div>
-                  <div className="flex items-center justify-between p-3 rounded-lg bg-ev-neutral/10 border border-ev-neutral/30">
-                    <div className="flex items-center gap-3">
-                      <Activity className="h-4 w-4 text-ev-neutral" />
-                      <div>
-                        <div className="font-medium">NBA games loading odds</div>
-                        <div className="text-sm text-muted-foreground">
-                          Live odds streaming active
-                        </div>
-                      </div>
+                  ))}
+                  {predictions.filter(p => p.ev_percent > 8).length === 0 && (
+                    <div className="p-8 text-center text-muted-foreground">
+                      No high-priority alerts at this time
                     </div>
-                    <Badge variant="neutral">Stable</Badge>
-                  </div>
+                  )}
                 </div>
               )}
             </CardContent>

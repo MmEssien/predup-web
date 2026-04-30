@@ -24,63 +24,14 @@ import {
 import { Activity, TrendingUp, Target, BarChart3, PieChart as PieChartIcon } from 'lucide-react'
 
 // Mock data for charts
-const roiOverTimeData = [
-  { date: '2026-04-01', roi: 2.1 },
-  { date: '2026-04-05', roi: 3.5 },
-  { date: '2026-04-10', roi: 2.8 },
-  { date: '2026-04-15', roi: 4.2 },
-  { date: '2026-04-20', roi: 5.1 },
-  { date: '2026-04-25', roi: 4.8 },
-  { date: '2026-04-28', roi: 3.8 },
-]
-
-const winRateBySport = [
-  { sport: 'Football', win_rate: 52.3, bets: 145 },
-  { sport: 'NBA', win_rate: 48.7, bets: 82 },
-  { sport: 'MLB', win_rate: 51.2, bets: 67 },
-]
-
-const winRateByLeague = [
-  { league: 'BL1', win_rate: 55.2, bets: 48 },
-  { league: 'PL', win_rate: 50.8, bets: 52 },
-  { league: 'PD', win_rate: 48.3, bets: 28 },
-  { league: 'SA', win_rate: 46.1, bets: 17 },
-]
-
-const clvTrendData = [
-  { date: '2026-04-01', clv: 1.2 },
-  { date: '2026-04-05', clv: 2.1 },
-  { date: '2026-04-10', clv: 1.8 },
-  { date: '2026-04-15', clv: 2.5 },
-  { date: '2026-04-20', clv: 3.1 },
-  { date: '2026-04-25', clv: 2.7 },
-  { date: '2026-04-28', clv: 2.4 },
-]
-
-const profitByMonthData = [
-  { month: 'Jan', profit: 245 },
-  { month: 'Feb', profit: 312 },
-  { month: 'Mar', profit: 189 },
-  { month: 'Apr', profit: 428 },
-]
-
-const betVolumeBySport = [
-  { sport: 'Football', volume: 145 },
-  { sport: 'NBA', volume: 82 },
-  { sport: 'MLB', volume: 67 },
-]
-
-const calibrationData = [
-  { predicted: 0.1, actual: 0.12 },
-  { predicted: 0.2, actual: 0.18 },
-  { predicted: 0.3, actual: 0.32 },
-  { predicted: 0.4, actual: 0.38 },
-  { predicted: 0.5, actual: 0.52 },
-  { predicted: 0.6, actual: 0.58 },
-  { predicted: 0.7, actual: 0.72 },
-  { predicted: 0.8, actual: 0.78 },
-  { predicted: 0.9, actual: 0.88 },
-]
+// No mock data in production
+const roiOverTimeData: any[] = [];
+const winRateBySport: any[] = [];
+const winRateByLeague: any[] = [];
+const clvTrendData: any[] = [];
+const profitByMonthData: any[] = [];
+const betVolumeBySport: any[] = [];
+const calibrationData: any[] = [];
 
 const COLORS = ['#3b82f6', '#22c55e', '#f59e0b']
 
@@ -105,28 +56,28 @@ export default function PerformancePage() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <StatCard
           title="Total ROI"
-          value="+3.8%"
+          value="0.0%"
           icon={TrendingUp}
-          trend="up"
-          subtitle="vs baseline"
+          trend="neutral"
+          subtitle="awaiting data"
         />
         <StatCard
           title="Win Rate"
-          value="51.2%"
+          value="0.0%"
           icon={Target}
-          trend="up"
-          subtitle="all picks"
+          trend="neutral"
+          subtitle="awaiting data"
         />
         <StatCard
           title="Avg CLV"
-          value="+2.4%"
+          value="0.0%"
           icon={Activity}
-          trend="up"
-          subtitle="closing value"
+          trend="neutral"
+          subtitle="awaiting data"
         />
         <StatCard
           title="Total Bets"
-          value="294"
+          value="0"
           icon={BarChart3}
           subtitle="this period"
         />

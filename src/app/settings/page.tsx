@@ -36,19 +36,9 @@ const defaultSettings: SettingsType = {
   odds_source_priority: ['oddsapi', 'sportsgameodds', 'oddsportal'],
 }
 
-const mockApiStatus = [
-  { name: 'The Odds API', status: 'connected', latency: 45, credits: 402 },
-  { name: 'SportsGameOdds', status: 'degraded', latency: 250, notes: 'Intermittent timeouts' },
-  { name: 'OddsPortal', status: 'connected', latency: 120, notes: 'Async only' },
-]
-
-const mockLeagueStatus = [
-  { league: 'BL1 (Bundesliga)', status: 'production', threshold: 0.70, roi: '+5.2%' },
-  { league: 'PL (Premier League)', status: 'production', threshold: 0.50, roi: '+3.8%' },
-  { league: 'PD (La Liga)', status: 'testing', threshold: 0.35, roi: '+1.2%' },
-  { league: 'SA (Serie A)', status: 'sandbox', threshold: 0.75, roi: '-2.1%' },
-  { league: 'FL1 (Ligue 1)', status: 'paused', threshold: 0.75, roi: 'N/A' },
-]
+// No mock data in production
+const mockApiStatus: any[] = [];
+const mockLeagueStatus: any[] = [];
 
 export default function SettingsPage() {
   const [health, setHealth] = useState<ApiHealth | null>(null)
@@ -369,8 +359,8 @@ export default function SettingsPage() {
                   <div>
                     <div className="text-sm text-muted-foreground">Database</div>
                     <div className="text-2xl font-bold flex items-center gap-2">
-                      <Database className="h-5 w-5 text-ev-strong" />
-                      Connected
+                      <Database className={cn("h-5 w-5", health?.database === 'connected' ? 'text-ev-strong' : 'text-ev-negative')} />
+                      {health?.database === 'connected' ? 'Connected' : 'Error'}
                     </div>
                   </div>
                 </div>
@@ -397,21 +387,27 @@ export default function SettingsPage() {
               <CardDescription>Real-time status of data sources</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
-              {mockApiStatus.map((api) => (
-                <div key={api.name} className="flex items-center justify-between p-4 bg-muted/30 rounded-lg">
-                  <div>
-                    <div className="font-medium">{api.name}</div>
-                    <div className="text-sm text-muted-foreground">
-                      Latency: {api.latency}ms | {api.credits !== undefined ? `Credits: ${api.credits}` : api.notes}
+              {mockApiStatus.length > 0 ? (
+                mockApiStatus.map((api) => (
+                  <div key={api.name} className="flex items-center justify-between p-4 bg-muted/30 rounded-lg">
+                    <div>
+                      <div className="font-medium">{api.name}</div>
+                      <div className="text-sm text-muted-foreground">
+                        Latency: {api.latency}ms | {api.credits !== undefined ? `Credits: ${api.credits}` : api.notes}
+                      </div>
                     </div>
+                    <Badge
+                      variant={api.status === 'connected' ? 'success' : 'warning'}
+                    >
+                      {api.status}
+                    </Badge>
                   </div>
-                  <Badge
-                    variant={api.status === 'connected' ? 'success' : 'warning'}
-                  >
-                    {api.status}
-                  </Badge>
+                ))
+              ) : (
+                <div className="p-4 text-center text-muted-foreground italic">
+                  Live data source metrics loading...
                 </div>
-              ))}
+              )}
             </CardContent>
           </Card>
 
