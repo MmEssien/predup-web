@@ -8,8 +8,8 @@ import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { getHealth } from '@/lib/api'
-import type { ApiHealth } from '@/lib/types'
+import { getHealth, getSettings, updateSettings } from '@/lib/api'
+import type { ApiHealth, Settings as SettingsType } from '@/lib/types'
 import { useEffect } from 'react'
 import {
   Settings,
@@ -24,24 +24,16 @@ import {
   Clock,
   TrendingUp,
 } from 'lucide-react'
+import { ErrorBanner } from '@/components/ui/error-banner'
 
-const mockHealth: ApiHealth = {
-  status: 'healthy',
-  service: 'predup',
-  database: 'connected',
-  models_loaded: 2,
-}
-
-const mockSettings = {
-  enabledSports: {
-    football: true,
-    nba: true,
-    mlb: false,
-  },
-  evThreshold: 4.0,
-  kellyMultiplier: 0.25,
-  autoRefreshInterval: 60,
-  oddsSourcePriority: ['oddsapi', 'sportsgameodds', 'oddsportal'],
+// Default fallback settings while loading
+const defaultSettings: SettingsType = {
+  enabled_sports: ['football', 'nba'],
+  ev_threshold: 4.0,
+  kelly_multiplier: 0.25,
+  auto_refresh_interval: 60,
+  api_health: { status: 'healthy', latency_ms: 45 },
+  odds_source_priority: ['oddsapi', 'sportsgameodds', 'oddsportal'],
 }
 
 const mockApiStatus = [
@@ -59,13 +51,45 @@ const mockLeagueStatus = [
 ]
 
 export default function SettingsPage() {
-  const [health, setHealth] = useState<ApiHealth | null>(mockHealth)
-  const [loading, setLoading] = useState(false)
-  const [settings, setSettings] = useState(mockSettings)
+  const [health, setHealth] = useState<ApiHealth | null>(null)
+  const [settings, setSettings] = useState<SettingsType>(defaultSettings)
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  const handleSave = () => {
+  const fetchData = async () => {
     setLoading(true)
-    setTimeout(() => setLoading(false), 1000)
+    setError(null)
+    try {
+      const [healthData, settingsData] = await Promise.all([
+        getHealth(),
+        getSettings().catch(() => defaultSettings) // Fallback if endpoint not implemented yet
+      ])
+      setHealth(healthData)
+      if (settingsData && Object.keys(settingsData).length > 0) {
+        setSettings(settingsData)
+      }
+    } catch (err) {
+      setError('Failed to connect to backend.')
+      console.error(err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchData()
+  }, [])
+
+  const handleSave = async () => {
+    setSaving(true)
+    try {
+      await updateSettings(settings)
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setSaving(false)
+    }
   }
 
   return (
@@ -76,11 +100,20 @@ export default function SettingsPage() {
           <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
           <p className="text-muted-foreground">Configure predictions and monitor system health</p>
         </div>
-        <Button onClick={handleSave} disabled={loading}>
-          <Save className={cn('h-4 w-4 mr-2', loading ? 'animate-spin' : '')} />
-          Save Changes
+        <Button onClick={handleSave} disabled={saving || loading}>
+          <Save className={cn('h-4 w-4 mr-2', saving ? 'animate-spin' : '')} />
+          {saving ? 'Saving...' : 'Save Changes'}
         </Button>
       </div>
+
+      {error && (
+        <ErrorBanner
+          message={error}
+          onRetry={fetchData}
+          onDismiss={() => setError(null)}
+          variant="error"
+        />
+      )}
 
       <Tabs defaultValue="general" className="space-y-6">
         <TabsList>
@@ -109,8 +142,8 @@ export default function SettingsPage() {
                   </div>
                   <Input
                     type="number"
-                    value={settings.evThreshold}
-                    onChange={(e) => setSettings({ ...settings, evThreshold: parseFloat(e.target.value) })}
+                    value={settings.ev_threshold}
+                    onChange={(e) => setSettings({ ...settings, ev_threshold: parseFloat(e.target.value) })}
                     className="w-20 text-right"
                     step="0.5"
                     min="0"
@@ -125,8 +158,8 @@ export default function SettingsPage() {
                   </div>
                   <Input
                     type="number"
-                    value={settings.kellyMultiplier}
-                    onChange={(e) => setSettings({ ...settings, kellyMultiplier: parseFloat(e.target.value) })}
+                    value={settings.kelly_multiplier}
+                    onChange={(e) => setSettings({ ...settings, kelly_multiplier: parseFloat(e.target.value) })}
                     className="w-20 text-right"
                     step="0.05"
                     min="0.1"
@@ -140,8 +173,8 @@ export default function SettingsPage() {
                     <div className="text-sm text-muted-foreground">Seconds between data refresh</div>
                   </div>
                   <Select
-                    value={settings.autoRefreshInterval.toString()}
-                    onValueChange={(v) => setSettings({ ...settings, autoRefreshInterval: parseInt(v) })}
+                    value={settings.auto_refresh_interval.toString()}
+                    onValueChange={(v) => setSettings({ ...settings, auto_refresh_interval: parseInt(v) })}
                   >
                     <SelectTrigger className="w-24">
                       <SelectValue />
@@ -166,7 +199,7 @@ export default function SettingsPage() {
                 <CardDescription>Order of preference for odds data</CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
-                {settings.oddsSourcePriority.map((source, index) => (
+                {settings.odds_source_priority.map((source, index) => (
                   <div key={source} className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg">
                     <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center text-xs text-primary-foreground">
                       {index + 1}
@@ -187,7 +220,7 @@ export default function SettingsPage() {
               <CardDescription>Toggle sports for prediction generation</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              {Object.entries(settings.enabledSports).map(([sport, enabled]) => (
+              {['football', 'nba', 'mlb'].map((sport) => (
                 <div key={sport} className="flex items-center justify-between p-4 bg-muted/30 rounded-lg">
                   <div className="flex items-center gap-3">
                     <div className="text-2xl">
@@ -201,11 +234,16 @@ export default function SettingsPage() {
                     </div>
                   </div>
                   <Switch
-                    checked={enabled}
-                    onCheckedChange={(checked) => setSettings({
-                      ...settings,
-                      enabledSports: { ...settings.enabledSports, [sport]: checked }
-                    })}
+                    checked={settings.enabled_sports.includes(sport as any)}
+                    onCheckedChange={(checked) => {
+                      const newSports = checked 
+                        ? [...settings.enabled_sports, sport as any] 
+                        : settings.enabled_sports.filter((s: any) => s !== sport);
+                      setSettings({
+                        ...settings,
+                        enabled_sports: newSports
+                      })
+                    }}
                   />
                 </div>
               ))}
@@ -378,8 +416,8 @@ export default function SettingsPage() {
           </Card>
 
           <div className="flex justify-end">
-            <Button variant="outline" onClick={() => window.location.reload()}>
-              <RefreshCw className="h-4 w-4 mr-2" />
+            <Button variant="outline" onClick={fetchData} disabled={loading}>
+              <RefreshCw className={cn('h-4 w-4 mr-2', loading ? 'animate-spin' : undefined)} />
               Refresh Status
             </Button>
           </div>

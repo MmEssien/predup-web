@@ -11,169 +11,10 @@ import { Search, Calendar, ArrowUpDown, Download, Filter } from 'lucide-react'
 import { cn, formatDate, formatCurrency, getLeagueLabel, getSportIcon } from '@/lib/utils'
 import type { HistoricalPick } from '@/lib/types'
 
-// Mock historical data
-const mockHistory: HistoricalPick[] = [
-  {
-    fixture_id: 1,
-    fixture: { id: 1, external_id: 1, date: '2026-04-28T15:00:00Z', home_team: 'Bayern Munich', away_team: 'Dortmund', status: 'FINISHED', home_score: 3, away_score: 1 },
-    sport: 'football',
-    league: 'BL1',
-    predicted_value: 'Over 2.5',
-    probability: 0.68,
-    confidence: 'high',
-    is_accepted: true,
-    ev: 8.5,
-    kelly_pct: 3.2,
-    odds_taken: 1.85,
-    closing_odds: 1.90,
-    result: 'win',
-    profit: 42.50,
-    clv: 5.0,
-    clv_percent: 2.7,
-    created_at: '2026-04-28T10:00:00Z',
-    settled_at: '2026-04-28T17:30:00Z',
-  },
-  {
-    fixture_id: 2,
-    fixture: { id: 2, external_id: 2, date: '2026-04-27T20:00:00Z', home_team: 'Manchester City', away_team: 'Arsenal', status: 'FINISHED', home_score: 1, away_score: 1 },
-    sport: 'football',
-    league: 'PL',
-    predicted_value: 'BTTS Yes',
-    probability: 0.58,
-    confidence: 'medium',
-    is_accepted: true,
-    ev: 4.2,
-    kelly_pct: 1.8,
-    odds_taken: 1.75,
-    closing_odds: 1.72,
-    result: 'win',
-    profit: 37.50,
-    clv: -1.7,
-    clv_percent: -1.0,
-    created_at: '2026-04-27T14:00:00Z',
-    settled_at: '2026-04-27T22:00:00Z',
-  },
-  {
-    fixture_id: 3,
-    fixture: { id: 3, external_id: 3, date: '2026-04-27T02:30:00Z', home_team: 'Lakers', away_team: 'Warriors', status: 'FINISHED', home_score: 112, away_score: 108 },
-    sport: 'nba',
-    league: 'NBA',
-    predicted_value: 'Lakers +3.5',
-    probability: 0.62,
-    confidence: 'high',
-    is_accepted: true,
-    ev: 6.8,
-    kelly_pct: 2.5,
-    odds_taken: 1.90,
-    closing_odds: 1.88,
-    result: 'win',
-    profit: 45.00,
-    clv: -2.1,
-    clv_percent: -1.1,
-    created_at: '2026-04-26T22:00:00Z',
-    settled_at: '2026-04-27T04:30:00Z',
-  },
-  {
-    fixture_id: 4,
-    fixture: { id: 4, external_id: 4, date: '2026-04-26T19:00:00Z', home_team: 'Real Madrid', away_team: 'Barcelona', status: 'FINISHED', home_score: 2, away_score: 3 },
-    sport: 'football',
-    league: 'PD',
-    predicted_value: 'Real Madrid ML',
-    probability: 0.48,
-    confidence: 'low',
-    is_accepted: true,
-    ev: 3.5,
-    kelly_pct: 1.2,
-    odds_taken: 2.50,
-    closing_odds: 2.45,
-    result: 'loss',
-    profit: -50.00,
-    clv: -2.0,
-    clv_percent: -0.8,
-    created_at: '2026-04-26T12:00:00Z',
-    settled_at: '2026-04-26T21:30:00Z',
-  },
-  {
-    fixture_id: 5,
-    fixture: { id: 5, external_id: 5, date: '2026-04-25T18:00:00Z', home_team: 'Dortmund', away_team: 'Schalke', status: 'FINISHED', home_score: 2, away_score: 2 },
-    sport: 'football',
-    league: 'BL1',
-    predicted_value: 'Under 3.5',
-    probability: 0.55,
-    confidence: 'medium',
-    is_accepted: true,
-    ev: 5.2,
-    kelly_pct: 2.0,
-    odds_taken: 1.80,
-    closing_odds: 1.85,
-    result: 'push',
-    profit: 0,
-    clv: 2.8,
-    clv_percent: 1.5,
-    created_at: '2026-04-25T12:00:00Z',
-    settled_at: '2026-04-25T20:00:00Z',
-  },
-  {
-    fixture_id: 6,
-    fixture: { id: 6, external_id: 6, date: '2026-04-24T23:00:00Z', home_team: 'Yankees', away_team: 'Red Sox', status: 'FINISHED', home_score: 5, away_score: 3 },
-    sport: 'mlb',
-    league: 'MLB',
-    predicted_value: 'Yankees -1.5',
-    probability: 0.54,
-    confidence: 'low',
-    is_accepted: true,
-    ev: 2.8,
-    kelly_pct: 1.0,
-    odds_taken: 1.85,
-    closing_odds: 1.90,
-    result: 'loss',
-    profit: -50.00,
-    clv: 2.7,
-    clv_percent: 1.5,
-    created_at: '2026-04-24T18:00:00Z',
-    settled_at: '2026-04-25T02:00:00Z',
-  },
-  {
-    fixture_id: 7,
-    fixture: { id: 7, external_id: 7, date: '2026-04-23T19:00:00Z', home_team: 'Inter', away_team: 'Milan', status: 'FINISHED', home_score: 1, away_score: 0 },
-    sport: 'football',
-    league: 'SA',
-    predicted_value: 'Inter ML',
-    probability: 0.52,
-    confidence: 'medium',
-    is_accepted: true,
-    ev: 4.5,
-    kelly_pct: 1.6,
-    odds_taken: 2.80,
-    closing_odds: 2.75,
-    result: 'win',
-    profit: 90.00,
-    clv: -1.8,
-    clv_percent: -0.6,
-    created_at: '2026-04-23T12:00:00Z',
-    settled_at: '2026-04-23T21:00:00Z',
-  },
-  {
-    fixture_id: 8,
-    fixture: { id: 8, external_id: 8, date: '2026-04-22T01:00:00Z', home_team: 'Celtics', away_team: 'Heat', status: 'FINISHED', home_score: 98, away_score: 95 },
-    sport: 'nba',
-    league: 'NBA',
-    predicted_value: 'Celtics -5.5',
-    probability: 0.60,
-    confidence: 'high',
-    is_accepted: true,
-    ev: 7.2,
-    kelly_pct: 2.8,
-    odds_taken: 1.90,
-    closing_odds: 1.92,
-    result: 'win',
-    profit: 45.00,
-    clv: 1.1,
-    clv_percent: 0.6,
-    created_at: '2026-04-21T20:00:00Z',
-    settled_at: '2026-04-22T03:00:00Z',
-  },
-]
+import { getHistoricalPicks } from '@/lib/api'
+import { ErrorBanner } from '@/components/ui/error-banner'
+import { Skeleton } from '@/components/ui/skeleton'
+import { useEffect } from 'react'
 
 type FilterOption = 'all' | 'win' | 'loss' | 'push'
 type SortOption = 'date' | 'profit' | 'ev' | 'odds'
@@ -184,9 +25,30 @@ export default function HistoryPage() {
   const [resultFilter, setResultFilter] = useState<FilterOption>('all')
   const [sortBy, setSortBy] = useState<SortOption>('date')
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
+  const [history, setHistory] = useState<HistoricalPick[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  const fetchData = async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      const data = await getHistoricalPicks()
+      setHistory(data)
+    } catch (err) {
+      setError('Backend connection failed. Could not load history.')
+      console.error(err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchData()
+  }, [])
 
   const filteredHistory = useMemo(() => {
-    let result = [...mockHistory]
+    let result = [...history]
 
     if (search) {
       const searchLower = search.toLowerCase()
@@ -225,7 +87,7 @@ export default function HistoryPage() {
     })
 
     return result
-  }, [search, sportFilter, resultFilter, sortBy, sortOrder])
+  }, [history, search, sportFilter, resultFilter, sortBy, sortOrder])
 
   const totalProfit = filteredHistory.reduce((sum, p) => sum + (p.profit || 0), 0)
   const winCount = filteredHistory.filter(p => p.result === 'win').length
@@ -239,14 +101,23 @@ export default function HistoryPage() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Historical Picks</h1>
           <p className="text-muted-foreground">
-            {mockHistory.length} picks • Profit: {totalProfit >= 0 ? '+' : ''}{totalProfit.toFixed(2)}
+            {history.length} picks • Profit: {totalProfit >= 0 ? '+' : ''}{totalProfit.toFixed(2)}
           </p>
         </div>
-        <Button variant="outline">
-          <Download className="h-4 w-4 mr-2" />
-          Export CSV
+        <Button variant="outline" onClick={fetchData} disabled={loading}>
+          <ArrowUpDown className={cn('h-4 w-4 mr-2', loading ? 'animate-spin' : undefined)} />
+          Refresh
         </Button>
       </div>
+
+      {error && (
+        <ErrorBanner
+          message={error}
+          onRetry={fetchData}
+          onDismiss={() => setError(null)}
+          variant="error"
+        />
+      )}
 
       {/* Summary Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -365,59 +236,67 @@ export default function HistoryPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredHistory.map((pick) => (
-                <TableRow key={pick.fixture_id}>
-                  <TableCell className="text-muted-foreground">
-                    {pick.fixture ? formatDate(pick.fixture.date) : '-'}
-                  </TableCell>
-                  <TableCell>
-                    <div className="font-medium">
-                      {pick.fixture?.home_team} vs {pick.fixture?.away_team}
-                    </div>
-                    <div className="text-xs text-muted-foreground flex items-center gap-1">
-                      <span>{getSportIcon(pick.sport || '')}</span>
-                      <span>{getLeagueLabel(pick.league || '')}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <span className="font-medium">{pick.predicted_value}</span>
-                  </TableCell>
-                  <TableCell className="text-right font-mono">
-                    {pick.odds_taken?.toFixed(2)}
-                  </TableCell>
-                  <TableCell className="text-right font-mono text-muted-foreground">
-                    {pick.closing_odds?.toFixed(2)}
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <Badge
-                      variant={
-                        pick.result === 'win' ? 'success' :
-                        pick.result === 'loss' ? 'danger' : 'neutral'
-                      }
-                    >
-                      {pick.result?.toUpperCase()}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className={cn(
-                    'text-right font-medium',
-                    pick.profit && pick.profit > 0 ? 'text-ev-strong' :
-                    pick.profit && pick.profit < 0 ? 'text-ev-negative' : ''
-                  )}>
-                    {pick.profit && pick.profit !== 0 ? `${pick.profit > 0 ? '+' : ''}${pick.profit.toFixed(2)}` : '-'}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <span className={cn(
-                      pick.ev && pick.ev > 0 ? 'text-ev-strong' :
-                      pick.ev && pick.ev < 0 ? 'text-ev-negative' : ''
-                    )}>
-                      {pick.ev ? `${pick.ev > 0 ? '+' : ''}${pick.ev.toFixed(1)}%` : '-'}
-                    </span>
-                  </TableCell>
-                  <TableCell className="text-right text-muted-foreground">
-                    {pick.clv !== undefined ? `${pick.clv > 0 ? '+' : ''}${pick.clv.toFixed(1)}%` : '-'}
+              {loading && history.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={9} className="h-24 text-center">
+                    <div className="flex justify-center"><Skeleton className="h-8 w-full max-w-sm" /></div>
                   </TableCell>
                 </TableRow>
-              ))}
+              ) : (
+                filteredHistory.map((pick) => (
+                  <TableRow key={pick.fixture_id}>
+                    <TableCell className="text-muted-foreground">
+                      {pick.fixture ? formatDate(pick.fixture.date) : '-'}
+                    </TableCell>
+                    <TableCell>
+                      <div className="font-medium">
+                        {pick.fixture?.home_team} vs {pick.fixture?.away_team}
+                      </div>
+                      <div className="text-xs text-muted-foreground flex items-center gap-1">
+                        <span>{getSportIcon(pick.sport || '')}</span>
+                        <span>{getLeagueLabel(pick.league || '')}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <span className="font-medium">{pick.predicted_value}</span>
+                    </TableCell>
+                    <TableCell className="text-right font-mono">
+                      {pick.odds_taken?.toFixed(2)}
+                    </TableCell>
+                    <TableCell className="text-right font-mono text-muted-foreground">
+                      {pick.closing_odds?.toFixed(2)}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <Badge
+                        variant={
+                          pick.result === 'win' ? 'success' :
+                          pick.result === 'loss' ? 'danger' : 'neutral'
+                        }
+                      >
+                        {pick.result?.toUpperCase()}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className={cn(
+                      'text-right font-medium',
+                      pick.profit && pick.profit > 0 ? 'text-ev-strong' :
+                      pick.profit && pick.profit < 0 ? 'text-ev-negative' : ''
+                    )}>
+                      {pick.profit && pick.profit !== 0 ? `${pick.profit > 0 ? '+' : ''}${pick.profit.toFixed(2)}` : '-'}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <span className={cn(
+                        pick.ev && pick.ev > 0 ? 'text-ev-strong' :
+                        pick.ev && pick.ev < 0 ? 'text-ev-negative' : ''
+                      )}>
+                        {pick.ev ? `${pick.ev > 0 ? '+' : ''}${pick.ev.toFixed(1)}%` : '-'}
+                      </span>
+                    </TableCell>
+                    <TableCell className="text-right text-muted-foreground">
+                      {pick.clv !== undefined ? `${pick.clv > 0 ? '+' : ''}${pick.clv.toFixed(1)}%` : '-'}
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
 

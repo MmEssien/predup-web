@@ -122,7 +122,8 @@ async function apiRequest<T>(
       ? await api.put<T>(url, data, { params })
       : await api.delete<T>(url, { params });
 
-    return response.data;
+    const responseData = response.data as any;
+    return responseData.data !== undefined ? responseData.data : responseData;
   } catch (error) {
     throw new Error(getErrorMessage(error));
   }

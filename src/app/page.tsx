@@ -8,8 +8,8 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ErrorBanner, ConnectionStatus, OfflineIndicator } from '@/components/ui/error-banner';
-import { getHealth, getDashboardStats, getLivePredictions } from '@/lib/api';
-import type { ApiHealth, LivePrediction, DashboardStats } from '@/lib/types';
+import { getHealth, getDashboardStats, getLivePredictions, getHistoricalPicks } from '@/lib/api';
+import type { ApiHealth, LivePrediction, DashboardStats, HistoricalPick } from '@/lib/types';
 import {
   Activity,
   TrendingUp,
@@ -22,18 +22,13 @@ import {
 } from 'lucide-react';
 
 
-const mockRecentSettled = [
-  { fixture: 'Bayern vs Leipzig', pick: 'Over 2.5', result: 'win' as const, profit: 45.0 },
-  { fixture: 'Man City vs Arsenal', pick: 'BTTS Yes', result: 'win' as const, profit: 38.5 },
-  { fixture: 'Lakers vs Celtics', pick: 'Lakers +3.5', result: 'loss' as const, profit: -50.0 },
-  { fixture: 'Dortmund vs Schalke', pick: 'Under 3.5', result: 'win' as const, profit: 28.0 },
-  { fixture: 'Real vs Atletico', pick: 'Draw', result: 'push' as const, profit: 0 },
-];
+
 
 export default function DashboardPage() {
   const [health, setHealth] = useState<ApiHealth | null>(null);
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [predictions, setPredictions] = useState<LivePrediction[]>([]);
+  const [recentSettled, setRecentSettled] = useState<HistoricalPick[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
@@ -56,6 +51,10 @@ export default function DashboardPage() {
       // Fetch live predictions
       const predictionsData = await getLivePredictions();
       setPredictions(predictionsData);
+
+      // Fetch recent history
+      const historyData = await getHistoricalPicks();
+      setRecentSettled(historyData.slice(0, 5));
 
       setLastUpdated(new Date());
     } catch (err) {
@@ -281,14 +280,14 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                {mockRecentSettled.map((pick, idx) => (
+                {recentSettled.map((pick) => (
                   <div
-                    key={idx}
+                    key={pick.fixture_id}
                     className="flex items-center justify-between p-3 rounded-lg bg-muted/30"
                   >
                     <div>
-                      <div className="font-medium">{pick.fixture}</div>
-                      <div className="text-sm text-muted-foreground">{pick.pick}</div>
+                      <div className="font-medium">{pick.fixture?.home_team} vs {pick.fixture?.away_team}</div>
+                      <div className="text-sm text-muted-foreground">{pick.predicted_value}</div>
                     </div>
                     <div className="text-right">
                       <Badge
@@ -300,23 +299,26 @@ export default function DashboardPage() {
                             : 'neutral'
                         }
                       >
-                        {pick.result.toUpperCase()}
+                        {pick.result?.toUpperCase()}
                       </Badge>
                       <div
                         className={`text-sm font-medium mt-1 ${
-                          pick.profit > 0
+                          pick.profit && pick.profit > 0
                             ? 'text-ev-strong'
-                            : pick.profit < 0
+                            : pick.profit && pick.profit < 0
                             ? 'text-ev-negative'
                             : ''
                         }`}
                       >
-                        {pick.profit > 0 ? '+' : ''}
-                        {pick.profit.toFixed(2)}
+                        {pick.profit && pick.profit > 0 ? '+' : ''}
+                        {pick.profit ? pick.profit.toFixed(2) : '-'}
                       </div>
                     </div>
                   </div>
                 ))}
+                {recentSettled.length === 0 && !loading && (
+                  <div className="p-4 text-center text-muted-foreground">No recent picks found</div>
+                )}
               </div>
             </CardContent>
           </Card>

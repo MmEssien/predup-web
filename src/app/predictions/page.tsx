@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -11,179 +11,9 @@ import { cn, getEvColor, getLeagueLabel, getSportIcon } from '@/lib/utils'
 import type { LivePrediction } from '@/lib/types'
 import { Search, Filter, ArrowUpDown, RefreshCw, TrendingUp } from 'lucide-react'
 
-// Extended mock data
-const mockPredictions: LivePrediction[] = [
-  {
-    fixture_id: 1,
-    sport: 'football',
-    league: 'BL1',
-    home_team: 'Bayern Munich',
-    away_team: 'Dortmund',
-    start_time: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(),
-    home_odds: 1.45,
-    away_odds: 2.85,
-    model_probability: 0.68,
-    implied_prob: 0.58,
-    ev_percent: 10.2,
-    kelly_percent: 4.2,
-    recommended_side: 'Bayern Munich',
-    confidence_score: 'high',
-    odds_source: 'The Odds API',
-  },
-  {
-    fixture_id: 2,
-    sport: 'football',
-    league: 'PL',
-    home_team: 'Manchester City',
-    away_team: 'Liverpool',
-    start_time: new Date(Date.now() + 4 * 60 * 60 * 1000).toISOString(),
-    home_odds: 2.10,
-    away_odds: 3.40,
-    model_probability: 0.52,
-    implied_prob: 0.48,
-    ev_percent: 5.8,
-    kelly_percent: 2.1,
-    recommended_side: 'Manchester City',
-    confidence_score: 'medium',
-    odds_source: 'The Odds API',
-  },
-  {
-    fixture_id: 3,
-    sport: 'nba',
-    league: 'NBA',
-    home_team: 'Lakers',
-    away_team: 'Warriors',
-    start_time: new Date(Date.now() + 6 * 60 * 60 * 1000).toISOString(),
-    home_odds: 1.95,
-    away_odds: 1.95,
-    model_probability: 0.55,
-    implied_prob: 0.50,
-    ev_percent: 6.2,
-    kelly_percent: 2.8,
-    recommended_side: 'Lakers',
-    confidence_score: 'medium',
-    odds_source: 'SportsGameOdds',
-  },
-  {
-    fixture_id: 4,
-    sport: 'football',
-    league: 'PD',
-    home_team: 'Real Madrid',
-    away_team: 'Barcelona',
-    start_time: new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString(),
-    home_odds: 2.50,
-    away_odds: 2.75,
-    model_probability: 0.48,
-    implied_prob: 0.44,
-    ev_percent: 4.1,
-    kelly_percent: 1.5,
-    recommended_side: 'Real Madrid',
-    confidence_score: 'low',
-    odds_source: 'The Odds API',
-  },
-  {
-    fixture_id: 5,
-    sport: 'football',
-    league: 'PL',
-    home_team: 'Arsenal',
-    away_team: 'Chelsea',
-    start_time: new Date(Date.now() + 10 * 60 * 60 * 1000).toISOString(),
-    home_odds: 1.75,
-    away_odds: 4.50,
-    model_probability: 0.60,
-    implied_prob: 0.55,
-    ev_percent: 7.3,
-    kelly_percent: 3.1,
-    recommended_side: 'Arsenal',
-    confidence_score: 'high',
-    odds_source: 'The Odds API',
-  },
-  {
-    fixture_id: 6,
-    sport: 'mlb',
-    league: 'MLB',
-    home_team: 'Yankees',
-    away_team: 'Red Sox',
-    start_time: new Date(Date.now() + 12 * 60 * 60 * 1000).toISOString(),
-    home_odds: 1.65,
-    away_odds: 2.30,
-    model_probability: 0.62,
-    implied_prob: 0.58,
-    ev_percent: 5.5,
-    kelly_percent: 2.0,
-    recommended_side: 'Yankees',
-    confidence_score: 'medium',
-    odds_source: 'The Odds API',
-  },
-  {
-    fixture_id: 7,
-    sport: 'football',
-    league: 'SA',
-    home_team: 'Juventus',
-    away_team: 'Inter',
-    start_time: new Date(Date.now() + 14 * 60 * 60 * 1000).toISOString(),
-    home_odds: 2.80,
-    away_odds: 2.60,
-    model_probability: 0.46,
-    implied_prob: 0.42,
-    ev_percent: 3.2,
-    kelly_percent: 1.2,
-    recommended_side: 'Inter',
-    confidence_score: 'low',
-    odds_source: 'The Odds API',
-  },
-  {
-    fixture_id: 8,
-    sport: 'nba',
-    league: 'NBA',
-    home_team: 'Celtics',
-    away_team: 'Heat',
-    start_time: new Date(Date.now() + 16 * 60 * 60 * 1000).toISOString(),
-    home_odds: 1.40,
-    away_odds: 3.00,
-    model_probability: 0.72,
-    implied_prob: 0.65,
-    ev_percent: 8.4,
-    kelly_percent: 3.8,
-    recommended_side: 'Celtics',
-    confidence_score: 'high',
-    odds_source: 'The Odds API',
-  },
-  {
-    fixture_id: 9,
-    sport: 'football',
-    league: 'FL1',
-    home_team: 'PSG',
-    away_team: 'Marseille',
-    start_time: new Date(Date.now() + 18 * 60 * 60 * 1000).toISOString(),
-    home_odds: 1.55,
-    away_odds: 2.60,
-    model_probability: 0.65,
-    implied_prob: 0.60,
-    ev_percent: 6.1,
-    kelly_percent: 2.5,
-    recommended_side: 'PSG',
-    confidence_score: 'medium',
-    odds_source: 'The Odds API',
-  },
-  {
-    fixture_id: 10,
-    sport: 'mlb',
-    league: 'MLB',
-    home_team: 'Dodgers',
-    away_team: 'Giants',
-    start_time: new Date(Date.now() + 20 * 60 * 60 * 1000).toISOString(),
-    home_odds: 1.70,
-    away_odds: 2.20,
-    model_probability: 0.58,
-    implied_prob: 0.52,
-    ev_percent: 4.8,
-    kelly_percent: 1.8,
-    recommended_side: 'Dodgers',
-    confidence_score: 'medium',
-    odds_source: 'The Odds API',
-  },
-]
+import { getLivePredictions, getHealth } from '@/lib/api'
+import { ErrorBanner, ConnectionStatus } from '@/components/ui/error-banner'
+import { Skeleton } from '@/components/ui/skeleton'
 
 type SortOption = 'ev' | 'kelly' | 'time' | 'confidence'
 type FilterOption = 'all' | 'high' | 'medium' | 'low'
@@ -194,10 +24,41 @@ export default function PredictionsPage() {
   const [leagueFilter, setLeagueFilter] = useState<string>('all')
   const [confidenceFilter, setConfidenceFilter] = useState<FilterOption>('all')
   const [sortBy, setSortBy] = useState<SortOption>('ev')
-  const [refreshing, setRefreshing] = useState(false)
+  const [predictions, setPredictions] = useState<LivePrediction[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [isBackendOnline, setIsBackendOnline] = useState(true)
+  const [lastUpdated, setLastUpdated] = useState<Date>(new Date())
+
+  const fetchData = async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      await getHealth()
+      setIsBackendOnline(true)
+      
+      const data = await getLivePredictions()
+      setPredictions(data)
+      setLastUpdated(new Date())
+    } catch (err) {
+      setIsBackendOnline(false)
+      setError('Backend connection failed. Please check backend status.')
+      console.error(err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchData()
+    const interval = setInterval(() => {
+      fetchData()
+    }, 60000)
+    return () => clearInterval(interval)
+  }, [])
 
   const filteredPredictions = useMemo(() => {
-    let result = [...mockPredictions]
+    let result = [...predictions]
 
     // Search filter
     if (search) {
@@ -241,17 +102,14 @@ export default function PredictionsPage() {
     })
 
     return result
-  }, [search, sportFilter, leagueFilter, confidenceFilter, sortBy])
+  }, [predictions, search, sportFilter, leagueFilter, confidenceFilter, sortBy])
 
   const handleRefresh = async () => {
-    setRefreshing(true)
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    setRefreshing(false)
+    await fetchData()
   }
 
-  const positiveEvCount = mockPredictions.filter(p => p.ev_percent > 0).length
-  const strongEvCount = mockPredictions.filter(p => p.ev_percent > 4).length
+  const positiveEvCount = predictions.filter(p => p.ev_percent > 0).length
+  const strongEvCount = predictions.filter(p => p.ev_percent > 4).length
 
   return (
     <div className="space-y-6">
@@ -263,11 +121,26 @@ export default function PredictionsPage() {
             {positiveEvCount} positive EV • {strongEvCount} strong signals
           </p>
         </div>
-        <Button variant="outline" onClick={handleRefresh} disabled={refreshing}>
-          <RefreshCw className={cn('h-4 w-4 mr-2', refreshing && 'animate-spin')} />
-          Refresh
-        </Button>
+        <div className="flex flex-col sm:flex-row items-center gap-4">
+          <ConnectionStatus isConnected={isBackendOnline} />
+          <div className="text-sm text-muted-foreground">
+            Updated: {lastUpdated.toLocaleTimeString()}
+          </div>
+          <Button variant="outline" onClick={handleRefresh} disabled={loading}>
+            <RefreshCw className={cn('h-4 w-4 mr-2', loading ? 'animate-spin' : undefined)} />
+            Refresh
+          </Button>
+        </div>
       </div>
+
+      {error && (
+        <ErrorBanner
+          message={error}
+          onRetry={handleRefresh}
+          onDismiss={() => setError(null)}
+          variant="warning"
+        />
+      )}
 
       {/* Filters */}
       <Card>
@@ -387,9 +260,21 @@ export default function PredictionsPage() {
 
           {/* Table Body */}
           <div className="divide-y">
-            {filteredPredictions.map((prediction) => (
-              <PredictionRow key={prediction.fixture_id} prediction={prediction} />
-            ))}
+            {loading && predictions.length === 0 ? (
+              <div className="p-4 space-y-3">
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <div key={i} className="flex items-center gap-4">
+                    <Skeleton className="h-8 w-8" />
+                    <Skeleton className="h-8 flex-1" />
+                    <Skeleton className="h-8 w-20" />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              filteredPredictions.map((prediction) => (
+                <PredictionRow key={prediction.fixture_id} prediction={prediction} />
+              ))
+            )}
           </div>
 
           {filteredPredictions.length === 0 && (
