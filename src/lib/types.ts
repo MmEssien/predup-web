@@ -90,6 +90,9 @@ export interface DashboardStats {
   yesterday_roi: number;
   open_predictions: number;
   last_updated: string;
+  pipeline_status?: string;
+  next_run?: string;
+  error?: string;
 }
 
 export interface HealthReport {

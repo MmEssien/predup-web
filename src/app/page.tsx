@@ -336,11 +336,13 @@ export default function DashboardPage() {
                 isBackendOnline ? 'bg-ev-strong animate-pulse' : 'bg-ev-negative'
               }`}
             />
-            Database: {health?.database ?? 'unknown'}
+            Pipeline: {stats?.pipeline_status ?? 'not_run'}
           </span>
-          <span>Models: {health?.models_loaded ?? 0}</span>
+          {stats?.last_updated && (
+            <span>Last Run: {new Date(stats.last_updated).toLocaleTimeString()}</span>
+          )}
         </div>
-        <span>PredUp v0.1.0</span>
+        <span>PredUp v0.2.0</span>
       </div>
     </div>
   );
