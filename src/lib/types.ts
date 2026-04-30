@@ -60,6 +60,7 @@ export interface LivePrediction extends Prediction {
   home_team: string;
   away_team: string;
   start_time: string;
+  display_time?: string;
   status: string;
   matchup?: string;
   home_odds: number;
@@ -71,6 +72,7 @@ export interface LivePrediction extends Prediction {
   recommended_side: string;
   confidence_score: Confidence;
   odds_source: string;
+  sport?: Sport;
 }
 
 export interface HistoricalPick extends Prediction {

@@ -29,6 +29,7 @@ export default function PredictionsPage() {
   const [error, setError] = useState<string | null>(null)
   const [isBackendOnline, setIsBackendOnline] = useState(true)
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date())
+  const [visibleCount, setVisibleCount] = useState(10)
 
   const fetchData = async () => {
     setLoading(true)
@@ -51,9 +52,10 @@ export default function PredictionsPage() {
 
   useEffect(() => {
     fetchData()
+    // Auto-refresh every 30 minutes
     const interval = setInterval(() => {
       fetchData()
-    }, 60000)
+    }, 30 * 60 * 1000)
     return () => clearInterval(interval)
   }, [])
 
@@ -69,12 +71,17 @@ export default function PredictionsPage() {
       )
     }
 
-    // Sport filter
-    if (sportFilter !== 'all') {
-      result = result.filter(p => p.sport === sportFilter)
-    }
+// Sport filter
+  if (sportFilter !== 'all') {
+    result = result.filter(p => p.sport === sportFilter)
+  }
 
-    // League filter
+  // Reset visible count when filters change
+  if (sportFilter !== 'all' || leagueFilter !== 'all' || confidenceFilter !== 'all' || search) {
+    setVisibleCount(10)
+  }
+
+  // League filter
     if (leagueFilter !== 'all') {
       result = result.filter(p => p.league === leagueFilter)
     }
@@ -271,9 +278,24 @@ export default function PredictionsPage() {
                 ))}
               </div>
             ) : (
-              filteredPredictions.map((prediction) => (
-                <PredictionRow key={prediction.fixture_id} prediction={prediction} />
-              ))
+              <>
+                {filteredPredictions.slice(0, visibleCount).map((prediction) => (
+                  <PredictionRow key={prediction.fixture_id} prediction={prediction} />
+                ))}
+                
+                {/* Show More Button */}
+                {visibleCount < filteredPredictions.length && (
+                  <div className="flex justify-center p-4">
+                    <Button 
+                      variant="outline" 
+                      onClick={() => setVisibleCount(v => Math.min(v + 10, filteredPredictions.length))}
+                      className="w-full max-w-xs"
+                    >
+                      Show More ({filteredPredictions.length - visibleCount} remaining)
+                    </Button>
+                  </div>
+                )}
+              </>
             )}
           </div>
 

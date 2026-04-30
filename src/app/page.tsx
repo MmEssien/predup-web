@@ -69,10 +69,10 @@ export default function DashboardPage() {
   useEffect(() => {
     fetchData();
 
-    // Auto-refresh every 60 seconds
+    // Auto-refresh every 30 minutes (not calling API, just re-rendering)
     const interval = setInterval(() => {
       fetchData();
-    }, 60000);
+    }, 30 * 60 * 1000);
 
     return () => clearInterval(interval);
   }, [fetchData]);
@@ -104,7 +104,7 @@ export default function DashboardPage() {
           />
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Clock className="h-4 w-4" />
-            <span>Updated: {lastUpdated.toLocaleTimeString()}</span>
+            <span>All times Africa/Lagos</span>
           </div>
         </div>
       </div>
