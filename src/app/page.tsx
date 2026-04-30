@@ -67,14 +67,8 @@ export default function DashboardPage() {
   }, []);
 
   useEffect(() => {
-    fetchData();
-
-    // Auto-refresh every 30 minutes (not calling API, just re-rendering)
-    const interval = setInterval(() => {
-      fetchData();
-    }, 30 * 60 * 1000);
-
-    return () => clearInterval(interval);
+    fetchData()
+    // No auto-refresh - data is fetched once per day and stored in DB
   }, [fetchData]);
 
   const topOpportunities = predictions.filter((p) => p.ev_percent > 4).slice(0, 5);

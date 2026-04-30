@@ -1,7 +1,7 @@
 import { Badge } from '@/components/ui/badge'
 import { cn, getEvColor, getConfidenceColor, getLeagueLabel, getSportIcon } from '@/lib/utils'
 import type { LivePrediction } from '@/lib/types'
-import { TrendingUp, Clock } from 'lucide-react'
+import { TrendingUp, Clock, Calendar } from 'lucide-react'
 import { formatTime } from '@/lib/utils'
 import Link from 'next/link'
 
@@ -12,6 +12,9 @@ interface PredictionRowProps {
 export function PredictionRow({ prediction }: PredictionRowProps) {
   const evClass = getEvColor(prediction.ev_percent)
   const confBadgeClass = getConfidenceColor(prediction.confidence_score)
+
+  const matchDate = prediction.match_date || 'TBD'
+  const matchTime = prediction.match_time || formatTime(prediction.start_time)
 
   return (
     <Link
@@ -33,18 +36,18 @@ export function PredictionRow({ prediction }: PredictionRowProps) {
           <div className="text-xs text-muted-foreground truncate">{prediction.away_team}</div>
         </div>
 
-        {/* Start Time / Status */}
-        <div className="col-span-1.5 flex flex-col items-start gap-1">
+        {/* Date & Time */}
+        <div className="col-span-1.5 flex flex-col items-start gap-0.5">
           {prediction.status === 'LIVE' || prediction.status === 'IN_PLAY' || prediction.status === '1H' || prediction.status === '2H' ? (
             <Badge variant="success" className="animate-pulse py-0 px-1 text-[10px]">LIVE</Badge>
-          ) : new Date(prediction.start_time).toDateString() === new Date().toDateString() ? (
+          ) : matchDate === 'Today' ? (
             <Badge variant="warning" className="py-0 px-1 text-[10px]">TODAY</Badge>
           ) : (
-            <Badge variant="outline" className="py-0 px-1 text-[10px]">UPCOMING</Badge>
+            <Badge variant="outline" className="py-0 px-1 text-[10px]">{matchDate}</Badge>
           )}
           <div className="text-xs text-muted-foreground flex items-center gap-1">
             <Clock className="h-3 w-3" />
-            {formatTime(prediction.start_time)}
+            {matchTime}
           </div>
         </div>
 

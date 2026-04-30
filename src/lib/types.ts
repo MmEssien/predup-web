@@ -60,7 +60,8 @@ export interface LivePrediction extends Prediction {
   home_team: string;
   away_team: string;
   start_time: string;
-  display_time?: string;
+  match_date?: string;
+  match_time?: string;
   status: string;
   matchup?: string;
   home_odds: number;
@@ -86,6 +87,7 @@ export interface HistoricalPick extends Prediction {
 
 export interface DashboardStats {
   total_fixtures_today: number;
+  today_fixture_count: number;
   positive_ev_opportunities: number;
   sports_active: string[];
   projected_edge_today: number;

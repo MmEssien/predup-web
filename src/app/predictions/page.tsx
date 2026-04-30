@@ -52,11 +52,7 @@ export default function PredictionsPage() {
 
   useEffect(() => {
     fetchData()
-    // Auto-refresh every 30 minutes
-    const interval = setInterval(() => {
-      fetchData()
-    }, 30 * 60 * 1000)
-    return () => clearInterval(interval)
+    // No auto-refresh - data is fetched once per day and stored in DB
   }, [])
 
   const filteredPredictions = useMemo(() => {
