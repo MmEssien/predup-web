@@ -68,7 +68,9 @@ export default function DashboardPage() {
 
   useEffect(() => {
     fetchData()
-    // No auto-refresh - data is fetched once per day and stored in DB
+    // Auto-refresh every 30 minutes from backend only (no external API calls)
+    const interval = setInterval(fetchData, 30 * 60 * 1000)
+    return () => clearInterval(interval)
   }, [fetchData]);
 
   const topOpportunities = predictions.filter((p) => p.ev_percent > 4).slice(0, 5);
@@ -91,7 +93,7 @@ export default function DashboardPage() {
           <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
           <p className="text-muted-foreground">Sports intelligence overview</p>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
           <ConnectionStatus
             isConnected={isBackendOnline}
             latency={health?.models_loaded ? 45 : undefined}
@@ -99,6 +101,9 @@ export default function DashboardPage() {
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Clock className="h-4 w-4" />
             <span>All times Africa/Lagos</span>
+          </div>
+          <div className="text-xs text-muted-foreground">
+            Auto-refreshes every 30 min
           </div>
         </div>
       </div>
@@ -322,7 +327,7 @@ export default function DashboardPage() {
       </Tabs>
 
       {/* API Status Footer */}
-      <div className="flex items-center justify-between text-xs text-muted-foreground border-t pt-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between text-xs text-muted-foreground border-t pt-4 gap-2">
         <div className="flex items-center gap-4">
           <span className="flex items-center gap-1">
             <span
@@ -332,11 +337,21 @@ export default function DashboardPage() {
             />
             Pipeline: {stats?.pipeline_status ?? 'not_run'}
           </span>
+          {stats?.last_batch_run_time && (
+            <span>Last Batch: {new Date(stats.last_batch_run_time).toLocaleString()}</span>
+          )}
           {stats?.last_updated && (
-            <span>Last Run: {new Date(stats.last_updated).toLocaleTimeString()}</span>
+            <span>Updated: {new Date(stats.last_updated).toLocaleTimeString()}</span>
           )}
         </div>
-        <span>PredUp v0.2.0</span>
+        <div className="flex items-center gap-2">
+          <span>PredUp v0.2.0</span>
+          <span>•</span>
+          <span className="flex items-center gap-1">
+            <Clock className="h-3 w-3" />
+            All times Africa/Lagos
+          </span>
+        </div>
       </div>
     </div>
   );

@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { PredictionRow } from '@/components/predictions/prediction-row'
 import { cn, getEvColor, getLeagueLabel, getSportIcon } from '@/lib/utils'
 import type { LivePrediction } from '@/lib/types'
-import { Search, Filter, ArrowUpDown, RefreshCw, TrendingUp } from 'lucide-react'
+import { Search, Filter, ArrowUpDown, RefreshCw, TrendingUp, Clock } from 'lucide-react'
 
 import { getLivePredictions, getHealth } from '@/lib/api'
 import { ErrorBanner, ConnectionStatus } from '@/components/ui/error-banner'
@@ -52,8 +52,10 @@ export default function PredictionsPage() {
 
   useEffect(() => {
     fetchData()
-    // No auto-refresh - data is fetched once per day and stored in DB
-  }, [])
+    // Auto-refresh every 30 minutes from backend only
+    const interval = setInterval(fetchData, 30 * 60 * 1000)
+    return () => clearInterval(interval)
+  }, [fetchData])
 
   const filteredPredictions = useMemo(() => {
     let result = [...predictions]
@@ -126,6 +128,10 @@ export default function PredictionsPage() {
         </div>
         <div className="flex flex-col sm:flex-row items-center gap-4">
           <ConnectionStatus isConnected={isBackendOnline} />
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Clock className="h-4 w-4" />
+            <span>All times Africa/Lagos</span>
+          </div>
           <div className="text-sm text-muted-foreground">
             Updated: {lastUpdated.toLocaleTimeString()}
           </div>

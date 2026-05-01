@@ -95,6 +95,7 @@ export interface DashboardStats {
   open_predictions: number;
   last_updated: string;
   pipeline_status?: string;
+  last_batch_run_time?: string;
   next_run?: string;
   error?: string;
 }

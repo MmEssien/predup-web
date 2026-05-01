@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Search, Calendar, ArrowUpDown, Download, Filter } from 'lucide-react'
+import { Search, ArrowUpDown, Download, Filter, Clock } from 'lucide-react'
 import { cn, formatDate, formatCurrency, getLeagueLabel, getSportIcon } from '@/lib/utils'
 import type { HistoricalPick } from '@/lib/types'
 
@@ -45,7 +45,10 @@ export default function HistoryPage() {
 
   useEffect(() => {
     fetchData()
-  }, [])
+    // Auto-refresh every 30 minutes from backend only
+    const interval = setInterval(fetchData, 30 * 60 * 1000)
+    return () => clearInterval(interval)
+  }, [fetchData])
 
   const filteredHistory = useMemo(() => {
     let result = [...history]
@@ -108,6 +111,10 @@ export default function HistoryPage() {
           <ArrowUpDown className={cn('h-4 w-4 mr-2', loading ? 'animate-spin' : undefined)} />
           Refresh
         </Button>
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Clock className="h-4 w-4" />
+          <span>All times Africa/Lagos</span>
+        </div>
       </div>
 
       {error && (
